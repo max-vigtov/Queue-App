@@ -4,7 +4,7 @@ import { Ticket } from '../../domain/interface/tickets';
 
 export class TicketService {
 
-	private readonly tickets: Ticket[] = [
+	public readonly tickets: Ticket[] = [
 		{ id: UuidAdapter.v4(), number: 1, createdAt: new Date(), done: false },
 		{ id: UuidAdapter.v4(), number: 2, createdAt: new Date(), done: false },
 		{ id: UuidAdapter.v4(), number: 3, createdAt: new Date(), done: false },
@@ -13,18 +13,24 @@ export class TicketService {
 		{ id: UuidAdapter.v4(), number: 6, createdAt: new Date(), done: false },
 	];
 
+	private readonly workingOnTickets: Ticket[] = [];
+
 	public get pendingTickets(): Ticket[] {
 		return this.tickets.filter( ticket => !ticket.handleAtDesk );
 	}
 
-	public lastTicketNumber () {
+	public get lastWorkingOnTickets():Ticket[] {
+		return this.workingOnTickets.splice(0,4);
+	}
+
+	public get lastTicketNumber () {
 		return this.tickets.length > 0 ? this.tickets.at(-1)!.number : 0;
 	}
 
 	public createTicker(): Ticket {
 		const ticket: Ticket = {
 			id: UuidAdapter.v4(),
-			number: this.lastTicketNumber() + 1,
+			number: this.lastTicketNumber + 1,
 			createdAt: new Date(),
 			done: false,
 			handleAt: undefined,
@@ -44,6 +50,7 @@ export class TicketService {
 		ticket.handleAtDesk = desk;
 		ticket.handleAt = new Date();
 		
+		this.workingOnTickets.unshift({ ...ticket });
 		//TODO: WS
 
 		return { status: 'ok', ticket }
@@ -56,7 +63,6 @@ export class TicketService {
 		this.tickets.map( ticket => {
 			if ( ticket.id === id ) {
 				ticket.done = true;
-			
 			} 
 			return ticket;
 		});

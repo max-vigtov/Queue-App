@@ -1,12 +1,14 @@
 import { Router } from "express";
 import { TicketController } from "./controller";
+import { TicketService } from "../services/ticket.service";
 
 export class TicketRoutes {
 
 	static get routes(){
 
 		const router = Router()
-		const ticketController = new TicketController
+		const ticketService = new TicketService
+		const ticketController = new TicketController( ticketService )
 
 		router.get('/', ticketController.getTickets);
 		router.get('/last' , ticketController.getLastTicketNumber);
