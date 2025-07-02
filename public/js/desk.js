@@ -85,7 +85,6 @@ function connectToWebSockets() {
   socket.onopen = ( event ) => {
     console.log( 'Connected' );
   };
-
 }
 
 btnDraw.addEventListener('click', getTicket);
