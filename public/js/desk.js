@@ -2,6 +2,7 @@
 const lblPending = document.querySelector("#lbl-pending");
 const desk = document.querySelector("h1");
 const noMoreAlert = document.querySelector(".alert");
+const lblCurrentTicket = document.querySelector("small");
 
 const btnDraw = document.querySelector("#btn-draw");
 const btnDone = document.querySelector("#btn-done");
@@ -14,6 +15,7 @@ if( !searchParams.has('escritorio') ) {
 }
 
 const deskNumber = searchParams.get('escritorio');
+let workingTicket = null;
 
 desk.innerHTML = deskNumber;
 
@@ -29,6 +31,33 @@ function checkTicketCount( currentCount ) {
 async function loadInitialCount() {
 	const pendingTickets = await fetch('/api/ticket/pending').then( resp => resp.json() );
   checkTicketCount( pendingTickets.length );
+}
+
+async function getTicket() {
+  finishTicket();
+  const { status, ticket, message } = await fetch(`/api/ticket/draw/${ deskNumber }`).then( resp => resp.json() );
+  
+  if( status === 'error' ) {
+    lblCurrentTicket.innerHTML = message;
+    return;
+  }
+
+  workingTicket = ticket;
+  lblCurrentTicket.innerText = ticket.number;
+  
+}
+
+async function finishTicket() {
+  if( !workingTicket ) return;
+  
+  const { status } = await fetch(`/api/ticket/done/${ workingTicket.id }`, {
+    method: 'PUT',
+  }).then( resp => resp.json() );
+
+  if( status === 'ok' ) {
+    workingTicket = null;
+    lblCurrentTicket.innerText = 'Nadie';
+  }
 }
 
 function connectToWebSockets() {
@@ -58,6 +87,9 @@ function connectToWebSockets() {
   };
 
 }
+
+btnDraw.addEventListener('click', getTicket);
+btnDone.addEventListener('click', finishTicket);
 
 connectToWebSockets();
 loadInitialCount();
