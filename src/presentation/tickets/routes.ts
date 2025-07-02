@@ -6,9 +6,10 @@ export class TicketRoutes {
 
 	static get routes(){
 
-		const router = Router()
-		const ticketService = new TicketService
-		const ticketController = new TicketController( ticketService )
+		const router = Router();
+		
+		const ticketService = new TicketService();
+		const ticketController = new TicketController( ticketService );
 
 		router.get('/', ticketController.getTickets);
 		router.get('/last' , ticketController.getLastTicketNumber);

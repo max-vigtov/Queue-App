@@ -20,17 +20,17 @@ export class TicketController {
 	}
 
 	public createTicket = async( req: Request, res: Response ) => {
-		res.status(201).json(this.ticketService.createTicker);
+		res.status(201).json(this.ticketService.createTicket());
 	}
 
 	public drawTicket = async( req: Request, res: Response ) => {
 		const { desk } = req.params;
-		res.json( this.ticketService.drawTicket( desk) );
+		res.json( this.ticketService.drawTicket( desk ) );
 	}
 
 	public ticketFinished = async( req: Request, res: Response ) => {
 		const { ticketId } = req.params;
-		res.json (this.ticketService.onFinished(ticketId) );
+		res.json (this.ticketService.onFinished( ticketId ) );
 	}
 
 	public workingOn = async( req: Request, res: Response ) => {
